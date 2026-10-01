@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After School Lessons</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .lesson {
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .lesson img {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" class="lesson">
+
+        <h1>{{ lesson.subject }}</h1>
+
+        <img 
+            v-bind:src="lesson.image" 
+            v-bind:alt="lesson.imageAlt"
+        >
+
+        <p><strong>Location:</strong> {{ lesson.location }}</p>
+
+        <p><strong>Price:</strong> £{{ lesson.price }}</p>
+
+    </div>
+
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script type="module">
+
+        const { createApp } = Vue;
+
+        const app = createApp({
+
+            data() {
+                return {
+                    lesson: {
+                        subject: 'Computer Science',
+                        location: 'Middlesex University, Hendon',
+                        price: 25,
+                        image: 'images/computer science.jpg',
+                        imageAlt: 'Students learning Computer Science'
+                    }
+                }
+            }
+
+        });
+
+        app.mount('#app');
+
+    </script>
+
+</body>
+</html>
