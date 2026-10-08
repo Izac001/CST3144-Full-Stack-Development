@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After School Lessons</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app">
+    <h1>After School Lessons</h1>
+
+    <!-- Cart button: only enabled once something is in the cart; toggles the page -->
+    <button v-on:click="showCart = !showCart" v-bind:disabled="cart.length === 0">
+        {{ showCart ? "Back to lessons" : "Cart (" + cart.length + ")" }}
+    </button>
+
+    
+    <div v-if="!showCart">
+        <div v-for="lesson in lessons" v-bind:key="lesson.id">
+            <h2>{{lesson.icon}} {{lesson.subject}}</h2>
+            <p>Location: {{lesson.location}}</p>
+            <p>Price: £{{lesson.price}}</p>
+            <p>Spaces left: {{lesson.spaces}}</p>
+            <button v-on:click="addToCart(lesson)" v-bind:disabled="!canAddToCart(lesson)">
+                Add to cart
+            </button>
+            <hr>
+        </div>
+    </div>
+
+    <!-- CART + CHECKOUT PAGE (Tasks 3.4 and 3.5) -->
+    <div v-else>
+        <h2>Your cart</h2>
+        <ul>
+            <template v-for="lesson in lessons" v-bind:key="lesson.id">
+                <li v-if="countInCart(lesson.id) > 0">
+                    {{lesson.subject}} × {{countInCart(lesson.id)}}
+                    <button v-on:click="removeFromCart(lesson)">Remove one</button>
+                </li>
+            </template>
+        </ul>
+
+        <h2>Checkout</h2>
+        <p>Name: <input v-model="order.name"></p>
+        <p>Phone: <input v-model="order.phone"></p>
+        <button v-on:click="checkout" v-bind:disabled="!canCheckout">Checkout</button>
+    </div>
+
+    <p v-if="message">{{message}}</p>
+</div>
+
+<script type="module">
+    const {createApp} = Vue
+    createApp({
+        data(){
+            return {
+                showCart: false,
+                message: "",
+                cart: [],   // holds lesson ids (one entry per space booked)
+                order: { name: "", phone: "" },
+                lessons: [
+                    { id: 1, subject: "Maths",   location: "London",     price: 20, spaces: 5, icon: "🧮" },
+                    { id: 2, subject: "Science",   location: "Brighton", price: 30, spaces: 5, icon: "🔬" },
+                    { id: 3, subject: "Basketball",location: "Bristol",      price: 15, spaces: 5, icon: "🏀" },
+                ]
+            }
+        },
+        computed: {
+            canCheckout(){
+                return this.order.name.trim() !== "" && this.order.phone.trim() !== "";
+            }
+        },
+        methods: {
+            canAddToCart(lesson){
+                return lesson.spaces > 0;
+            },
+            addToCart(lesson){
+                if (!this.canAddToCart(lesson)) return;
+                this.cart.push(lesson.id);
+                lesson.spaces--;
+                this.message = "";
+            },
+            countInCart(id){
+                return this.cart.filter(x => x === id).length;
+            },
+            removeFromCart(lesson){
+                const i = this.cart.indexOf(lesson.id);
+                if (i !== -1) {
+                    this.cart.splice(i, 1);
+                    lesson.spaces++;
+                }
+                if (this.cart.length === 0) this.showCart = false;
+            },
+            checkout(){
+                this.message = "Thank you " + this.order.name + ", your order has been confirmed!";
+                this.cart = [];
+                this.order.name = "";
+                this.order.phone = "";
+                this.showCart = false;
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
+</html>
